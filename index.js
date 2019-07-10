@@ -2,15 +2,9 @@ const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
 const express = require('express');
-// const path = require('path');
 
 const app = express();
 app.use(express.json({ extended: false }));
-
-// app.use('/api/calendars', require('./calendars'));
-// app.use('/api/events', require('./routes/api/events'));
-
-
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
@@ -19,10 +13,7 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 // time.
 const TOKEN_PATH = 'token.json';
 
-
 // Load client secrets from a local file.
-
-// moze uzyje config paczki? --------
 function readCredentials(callback) {
   fs.readFile('credentials.json', (err, content) => {
     if (err) return console.log('Error loading client secret file:', err);
@@ -31,8 +22,6 @@ function readCredentials(callback) {
     // authorize(JSON.parse(content), insertEvent);
   });
 }
-
-// })
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -52,7 +41,6 @@ function authorize(credentials, callback) {
     oAuth2Client.setCredentials(JSON.parse(token));
     callback(oAuth2Client);
   });
-
 }
 
 /**
@@ -107,16 +95,6 @@ app.get('/', async (req, res) => {
       if (err) return console.log('The API returned an error: ' + err);
       const events = res.data.items;
       sendMe(events)
-      // if (events.length) {
-      //   console.log('Upcoming 10 events:');
-      //   events.map((event, i) => {
-      //     const start = event.start.dateTime || event.start.date;
-      //     console.log(`${start} - ${event.summary}`);
-      //     // res.send( `${start} - ${event.summary}` )
-      //   });
-      // } else {
-      //   console.log('No upcoming events found.');
-      // }
     })
   }
 
@@ -124,35 +102,6 @@ app.get('/', async (req, res) => {
     res.status(200).json(x)
   }
 })
-
-
-var event = {
-  'summary': 'Google I/O 2015',
-  'location': '800 Howard St., San Francisco, CA 94103',
-  'description': 'A chance to hear more about Google\'s developer products.',
-  'start': {
-    'dateTime': '2019-11-28T09:00:00-07:00',
-    'timeZone': 'America/Los_Angeles',
-  },
-  'end': {
-    'dateTime': '2019-12-28T17:00:00-07:00',
-    'timeZone': 'America/Los_Angeles',
-  },
-  'recurrence': [
-    'RRULE:FREQ=DAILY;COUNT=2'
-  ],
-  'attendees': [
-    { 'email': 'lpage@example.com' },
-    { 'email': 'sbrin@example.com' },
-  ],
-  'reminders': {
-    'useDefault': false,
-    'overrides': [
-      { 'method': 'email', 'minutes': 24 * 60 },
-      { 'method': 'popup', 'minutes': 10 },
-    ],
-  },
-};
 
 app.post('/', async (req, res) => {
   readCredentials(insertEvent);
@@ -168,26 +117,13 @@ app.post('/', async (req, res) => {
         return;
       }
       console.log('Event created: %s', event.htmlLink);
-      response()
-      // res.status(200).send({ msg: `Event created: %s` ${ event.htmlLink } });
+      response();
     })
-    // .then((() => res.json({ success: true })))
-    // .catch(err => res.status(404).json({ success: false }));
   }
   function response() {
     res.status(200).send({ msg: 'Event created:' });
   }
 })
-
-
-// if (process.env.NODE_ENV === 'production') {
-//   // Set static folder
-//   app.use(express.static('client/build'));
-
-//   app.get('*', (req, res) => {
-//     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-//   });
-// }
 
 const PORT = process.env.PORT || 5000;
 
