@@ -79,7 +79,7 @@ function getAccessToken(oAuth2Client, callback) {
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 
-app.get('/', async (req, res) => {
+app.get('/', (req, res) => {
   readCredentials(listEvents);
 
   function listEvents(auth) {
@@ -103,20 +103,21 @@ app.get('/', async (req, res) => {
   }
 })
 
-app.post('/', async (req, res) => {
+app.post('/', (req, res) => {
+  console.log(req)
   readCredentials(insertEvent);
   function insertEvent(auth) {
     const calendar = google.calendar({ version: 'v3', auth });
     calendar.events.insert({
       auth: auth,
       calendarId: 'primary',
-      resource: event,
-    }, function (err, event) {
+      resource: req.body,
+    }, function (err, res) {
       if (err) {
         console.log('There was an error contacting the Calendar service: ' + err);
         return;
       }
-      console.log('Event created: %s', event.htmlLink);
+      console.log('Event created: %s', res.htmlLink);
       response();
     })
   }
