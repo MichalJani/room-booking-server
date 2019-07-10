@@ -20,22 +20,19 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 const TOKEN_PATH = 'token.json';
 
 
-app.get('/', (req, res) => {
-  // Load client secrets from a local file.
+// Load client secrets from a local file.
 
-  // moze uzyje config paczki? --------
-
+// moze uzyje config paczki? --------
+function readCredentials(callback) {
   fs.readFile('credentials.json', (err, content) => {
     if (err) return console.log('Error loading client secret file:', err);
     // Authorize a client with credentials, then call the Google Calendar API.
-    authorize(JSON.parse(content), listEvents);
+    authorize(JSON.parse(content), callback);
     // authorize(JSON.parse(content), insertEvent);
   });
+}
 
-
-
-
-})
+// })
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -44,6 +41,7 @@ app.get('/', (req, res) => {
  * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(credentials, callback) {
+  console.log(callback)
   const { client_secret, client_id, redirect_uris } = credentials.installed;
   const oAuth2Client = new google.auth.OAuth2(
     client_id, client_secret, redirect_uris[0]);
@@ -54,7 +52,6 @@ function authorize(credentials, callback) {
     oAuth2Client.setCredentials(JSON.parse(token));
     callback(oAuth2Client);
   });
-
 
 }
 
@@ -93,29 +90,40 @@ function getAccessToken(oAuth2Client, callback) {
  * Lists the next 10 events on the user's primary calendar.
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-function listEvents(auth) {
-  const calendar = google.calendar({ version: 'v3', auth });
-  calendar.events.list({
-    calendarId: 'primary',
-    timeMin: (new Date()).toISOString(),
-    maxResults: 10,
-    singleEvents: true,
-    orderBy: 'startTime',
-  }, (err, res) => {
-    if (err) return console.log('The API returned an error: ' + err);
-    const events = res.data.items;
-    if (events.length) {
-      console.log('Upcoming 10 events:');
-      events.map((event, i) => {
-        const start = event.start.dateTime || event.start.date;
-        console.log(`${start} - ${event.summary}`);
-      });
-    } else {
-      console.log('No upcoming events found.');
-    }
-  });
-}
 
+app.get('/', async (req, res) => {
+  readCredentials(listEvents);
+
+  function listEvents(auth) {
+    const calendar = google.calendar({ version: 'v3', auth });
+    calendar.events.list({
+      calendarId: 'primary',
+      timeMin: (new Date()).toISOString(),
+      maxResults: 10,
+      singleEvents: true,
+      orderBy: 'startTime',
+    }, (err, res) => {
+
+      if (err) return console.log('The API returned an error: ' + err);
+      const events = res.data.items;
+      sendMe(events)
+      // if (events.length) {
+      //   console.log('Upcoming 10 events:');
+      //   events.map((event, i) => {
+      //     const start = event.start.dateTime || event.start.date;
+      //     console.log(`${start} - ${event.summary}`);
+      //     // res.send( `${start} - ${event.summary}` )
+      //   });
+      // } else {
+      //   console.log('No upcoming events found.');
+      // }
+    })
+  }
+
+  function sendMe(x) {
+    res.status(200).json(x)
+  }
+})
 
 
 var event = {
@@ -123,11 +131,11 @@ var event = {
   'location': '800 Howard St., San Francisco, CA 94103',
   'description': 'A chance to hear more about Google\'s developer products.',
   'start': {
-    'dateTime': '2019-10-28T09:00:00-07:00',
+    'dateTime': '2019-11-28T09:00:00-07:00',
     'timeZone': 'America/Los_Angeles',
   },
   'end': {
-    'dateTime': '2019-11-28T17:00:00-07:00',
+    'dateTime': '2019-12-28T17:00:00-07:00',
     'timeZone': 'America/Los_Angeles',
   },
   'recurrence': [
@@ -146,20 +154,30 @@ var event = {
   },
 };
 
-function insertEvent(auth) {
-  const calendar = google.calendar({ version: 'v3', auth });
-  calendar.events.insert({
-    auth: auth,
-    calendarId: 'primary',
-    resource: event,
-  }, function (err, event) {
-    if (err) {
-      console.log('There was an error contacting the Calendar service: ' + err);
-      return;
-    }
-    console.log('Event created: %s', event.htmlLink);
-  });
-}
+app.post('/', async (req, res) => {
+  readCredentials(insertEvent);
+  function insertEvent(auth) {
+    const calendar = google.calendar({ version: 'v3', auth });
+    calendar.events.insert({
+      auth: auth,
+      calendarId: 'primary',
+      resource: event,
+    }, function (err, event) {
+      if (err) {
+        console.log('There was an error contacting the Calendar service: ' + err);
+        return;
+      }
+      console.log('Event created: %s', event.htmlLink);
+      response()
+      // res.status(200).send({ msg: `Event created: %s` ${ event.htmlLink } });
+    })
+    // .then((() => res.json({ success: true })))
+    // .catch(err => res.status(404).json({ success: false }));
+  }
+  function response() {
+    res.status(200).send({ msg: 'Event created:' });
+  }
+})
 
 
 // if (process.env.NODE_ENV === 'production') {
