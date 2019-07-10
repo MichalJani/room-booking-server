@@ -139,11 +139,11 @@ app.post('/', (req, res) => {
         console.log('There was an error contacting the Calendar service: ' + err);
         return;
       }
-      response(event);
+      response(res.data);
     })
   }
   function response(event) {
-    res.status(200).send({ msg: 'Event created' }, event);
+    res.status(200).send(event);
   }
 })
 
