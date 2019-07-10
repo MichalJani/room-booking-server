@@ -30,7 +30,6 @@ function readCredentials(callback) {
  * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(credentials, callback) {
-  console.log(callback)
   const { client_secret, client_id, redirect_uris } = credentials.installed;
   const oAuth2Client = new google.auth.OAuth2(
     client_id, client_secret, redirect_uris[0]);
@@ -76,51 +75,51 @@ function getAccessToken(oAuth2Client, callback) {
 }
 
 
-// router.get('/', (req, res) => {
-//   readCredentials(listEvents);
+router.get('/', (req, res) => {
+  readCredentials(listEvents);
 
-//   function listEvents(auth) {
-//     const calendar = google.calendar({ version: 'v3', auth });
-//     calendar.events.list({
-//       calendarId: 'primary',
-//       timeMin: (new Date()).toISOString(),
-//       maxResults: 10,
-//       singleEvents: true,
-//       orderBy: 'startTime',
-//     }, (err, res) => {
+  function listEvents(auth) {
+    const calendar = google.calendar({ version: 'v3', auth });
+    calendar.events.list({
+      calendarId: 'primary',
+      timeMin: (new Date()).toISOString(),
+      maxResults: 10,
+      singleEvents: true,
+      orderBy: 'startTime',
+    }, (err, res) => {
 
-//       if (err) return console.log('The API returned an error: ' + err);
-//       const events = res.data.items;
-//       sendMe(events)
-//     })
-//   }
+      if (err) return console.log('The API returned an error: ' + err);
+      const events = res.data.items;
+      sendMe(events)
+    })
+  }
 
-//   function sendMe(x) {
-//     res.status(200).json(x)
-//   }
-// })
+  function sendMe(x) {
+    res.status(200).json(x)
+  }
+})
 
 
-// router.post('/', (req, res) => {
-//   readCredentials(insertEvent);
-//   function insertEvent(auth) {
-//     const calendar = google.calendar({ version: 'v3', auth });
-//     calendar.events.insert({
-//       auth: auth,
-//       calendarId: 'primary',
-//       resource: req.body,
-//     }, function (err, res) {
-//       if (err) {
-//         console.log('There was an error contacting the Calendar service: ' + err);
-//         return;
-//       }
-//       response(res.data);
-//     })
-//   }
-//   function response(event) {
-//     res.status(200).send(event);
-//   }
-// })
+router.post('/', (req, res) => {
+  readCredentials(insertEvent);
+  function insertEvent(auth) {
+    const calendar = google.calendar({ version: 'v3', auth });
+    calendar.events.insert({
+      auth: auth,
+      calendarId: 'primary',
+      resource: req.body,
+    }, function (err, res) {
+      if (err) {
+        console.log('There was an error contacting the Calendar service: ' + err);
+        return;
+      }
+      response(res.data);
+    })
+  }
+  function response(event) {
+    res.status(200).send(event);
+  }
+})
 
 
 
