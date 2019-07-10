@@ -91,7 +91,7 @@ function getAccessToken(oAuth2Client, callback) {
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 
-app.get('/', async (req, res) => {
+app.get('/', (req, res) => {
   readCredentials(listEvents);
 
   function listEvents(auth) {
