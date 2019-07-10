@@ -2,7 +2,15 @@ const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
 const express = require('express');
+// const path = require('path');
+
 const app = express();
+app.use(express.json({ extended: false }));
+
+// app.use('/api/calendars', require('./calendars'));
+// app.use('/api/events', require('./routes/api/events'));
+
+
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
@@ -11,13 +19,23 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 // time.
 const TOKEN_PATH = 'token.json';
 
-// Load client secrets from a local file.
-fs.readFile('credentials.json', (err, content) => {
-  if (err) return console.log('Error loading client secret file:', err);
-  // Authorize a client with credentials, then call the Google Calendar API.
-  authorize(JSON.parse(content), listEvents);
-  authorize(JSON.parse(content), insertEvent);
-});
+
+app.get('/', (req, res) => {
+  // Load client secrets from a local file.
+
+  // moze uzyje config paczki? --------
+
+  fs.readFile('credentials.json', (err, content) => {
+    if (err) return console.log('Error loading client secret file:', err);
+    // Authorize a client with credentials, then call the Google Calendar API.
+    authorize(JSON.parse(content), listEvents);
+    // authorize(JSON.parse(content), insertEvent);
+  });
+
+
+
+
+})
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -36,6 +54,8 @@ function authorize(credentials, callback) {
     oAuth2Client.setCredentials(JSON.parse(token));
     callback(oAuth2Client);
   });
+
+
 }
 
 /**
@@ -141,6 +161,15 @@ function insertEvent(auth) {
   });
 }
 
+
+// if (process.env.NODE_ENV === 'production') {
+//   // Set static folder
+//   app.use(express.static('client/build'));
+
+//   app.get('*', (req, res) => {
+//     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+//   });
+// }
 
 const PORT = process.env.PORT || 5000;
 
