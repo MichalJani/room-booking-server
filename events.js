@@ -90,12 +90,12 @@ router.get('/', (req, res) => {
 
       if (err) return console.log('The API returned an error: ' + err);
       const events = res.data.items;
-      sendMe(events)
+      respond(events);
     })
   }
 
-  function sendMe(x) {
-    res.status(200).json(x)
+  function respond(events) {
+    res.status(200).json(events)
   }
 })
 
@@ -113,11 +113,12 @@ router.post('/', (req, res) => {
         console.log('There was an error contacting the Calendar service: ' + err);
         return;
       }
-      response(res.data);
+      const event = res.data;
+      respond(event);
     })
   }
-  function response(event) {
-    res.status(200).send(event);
+  function respond(event) {
+    res.status(200).json(event);
   }
 })
 
