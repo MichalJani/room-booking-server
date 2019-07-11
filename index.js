@@ -7,19 +7,14 @@ const express = require('express');
 const app = express();
 app.use(express.json({ extended: false }));
 
-// app.use('/api/calendars', require('./calendars'));
-// app.use('/api/events', require('./routes/api/events'));
+app.use('/api/calendars', require('./calendars'));
+app.use('/api/events', require('./events'));
 
 
 
-// If modifying these scopes, delete token.json.
-const SCOPES = ['https://www.googleapis.com/auth/calendar'];
-// The file token.json stores the user's access and refresh tokens, and is
-// created automatically when the authorization flow completes for the first
-// time.
-const TOKEN_PATH = 'token.json';
 
 
+<<<<<<< HEAD
 // Load client secrets from a local file.
 
 // moze uzyje config paczki? --------
@@ -147,6 +142,8 @@ app.post('/', (req, res) => {
   }
 })
 
+=======
+>>>>>>> router
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
