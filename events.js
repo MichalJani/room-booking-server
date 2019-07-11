@@ -12,7 +12,6 @@ const TOKEN_PATH = 'token.json';
 
 
 // Load client secrets from a local file.
-
 function readCredentials(callback) {
   fs.readFile('credentials.json', (err, content) => {
     if (err) return console.log('Error loading client secret file:', err);
@@ -21,7 +20,6 @@ function readCredentials(callback) {
     // authorize(JSON.parse(content), insertEvent);
   });
 }
-
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -33,14 +31,12 @@ function authorize(credentials, callback) {
   const { client_secret, client_id, redirect_uris } = credentials.installed;
   const oAuth2Client = new google.auth.OAuth2(
     client_id, client_secret, redirect_uris[0]);
-
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
     if (err) return getAccessToken(oAuth2Client, callback);
     oAuth2Client.setCredentials(JSON.parse(token));
     callback(oAuth2Client);
   });
-
 }
 
 /**
@@ -79,7 +75,6 @@ function getAccessToken(oAuth2Client, callback) {
 // @access   Private
 router.get('/', (req, res) => {
   readCredentials(listEvents);
-
   function listEvents(auth) {
     const calendar = google.calendar({ version: 'v3', auth });
     calendar.events.list({
@@ -89,14 +84,13 @@ router.get('/', (req, res) => {
       singleEvents: true,
       orderBy: 'startTime',
     }, (err, res) => {
-
       if (err) {
         console.log('The API returned an error: ' + err);
         respondError(err);
         return;
       }
       respond(res);
-    })
+    });
   }
   function respondError(calError) {
     res.status(calError.code).json(calError.errors[0]);
@@ -104,7 +98,7 @@ router.get('/', (req, res) => {
   function respond(calRes) {
     res.status(calRes.status).json(calRes.data.items);
   }
-})
+});
 
 // @route    POST api/events
 // @desc     Add new event
@@ -120,11 +114,11 @@ router.post('/', (req, res) => {
     }, function (err, res) {
       if (err) {
         console.log('There was an error contacting the Calendar service: ' + err);
-        respondError(err)
+        respondError(err);
         return;
       }
       respond(res);
-    })
+    });
   }
   function respondError(calError) {
     res.status(calError.code).json(calError.errors[0]);
@@ -132,7 +126,7 @@ router.post('/', (req, res) => {
   function respond(calRes) {
     res.status(calRes.status).json(calRes.data);
   }
-})
+});
 
 // @route    GET api/events/:id
 // @desc     Get event by id
@@ -148,11 +142,11 @@ router.get('/:id', (req, res) => {
     }, function (err, res) {
       if (err) {
         console.log('There was an error contacting the Calendar service: ' + err);
-        respondError(err)
+        respondError(err);
         return;
       }
       respond(res);
-    })
+    });
   }
   function respondError(calError) {
     res.status(calError.code).json(calError.errors[0]);
@@ -160,7 +154,7 @@ router.get('/:id', (req, res) => {
   function respond(calRes) {
     res.status(calRes.status).json(calRes.data);
   }
-})
+});
 
 // @route    DELETE api/events/:id
 // @desc     Delete event by id
@@ -176,11 +170,11 @@ router.delete('/:id', (req, res) => {
     }, function (err, res) {
       if (err) {
         console.log('There was an error contacting the Calendar service: ' + err);
-        respondError(err)
+        respondError(err);
         return;
       }
       respond(res);
-    })
+    });
   }
   function respondError(calError) {
     res.status(calError.code).json(calError.errors[0]);
@@ -188,7 +182,7 @@ router.delete('/:id', (req, res) => {
   function respond(calRes) {
     res.status(calRes.status).send({ message: 'Event has been deleted.' });
   }
-})
+});
 
 // @route    PUT api/events
 // @desc     Update event
@@ -205,11 +199,11 @@ router.put('/:id', (req, res) => {
     }, function (err, res) {
       if (err) {
         console.log('There was an error contacting the Calendar service: ' + err);
-        respondError(err)
+        respondError(err);
         return;
       }
       respond(res);
-    })
+    });
   }
   function respondError(calError) {
     res.status(calError.code).json(calError.errors[0]);
@@ -217,7 +211,6 @@ router.put('/:id', (req, res) => {
   function respond(calRes) {
     res.status(calRes.status).json(calRes.data);
   }
-})
-
+});
 
 module.exports = router;
