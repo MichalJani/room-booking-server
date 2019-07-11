@@ -1,15 +1,15 @@
+const fs = require('fs');
+const readline = require('readline');
+const { google } = require('googleapis');
 const express = require('express');
-<<<<<<< HEAD
-
-const app = express();
-app.use(express.json({ extended: false }));
-
+const router = express.Router();
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
 // time.
 const TOKEN_PATH = 'token.json';
+
 
 // Load client secrets from a local file.
 function readCredentials(callback) {
@@ -28,11 +28,9 @@ function readCredentials(callback) {
  * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(credentials, callback) {
-  console.log(callback)
   const { client_secret, client_id, redirect_uris } = credentials.installed;
   const oAuth2Client = new google.auth.OAuth2(
     client_id, client_secret, redirect_uris[0]);
-
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
     if (err) return getAccessToken(oAuth2Client, callback);
@@ -72,14 +70,11 @@ function getAccessToken(oAuth2Client, callback) {
   });
 }
 
-/**
- * Lists the next 10 events on the user's primary calendar.
- * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
- */
-
-app.get('/', (req, res) => {
+// @route    GET api/events
+// @desc     Get all events
+// @access   Private
+router.get('/', (req, res) => {
   readCredentials(listEvents);
-
   function listEvents(auth) {
     const calendar = google.calendar({ version: 'v3', auth });
     calendar.events.list({
@@ -89,20 +84,26 @@ app.get('/', (req, res) => {
       singleEvents: true,
       orderBy: 'startTime',
     }, (err, res) => {
-
-      if (err) return console.log('The API returned an error: ' + err);
-      const events = res.data.items;
-      sendMe(events)
-    })
+      if (err) {
+        console.log('The API returned an error: ' + err);
+        respondError(err);
+        return;
+      }
+      respond(res);
+    });
   }
-
-  function sendMe(x) {
-    res.status(200).json(x)
+  function respondError(calError) {
+    res.status(calError.code).json(calError.errors[0]);
   }
-})
+  function respond(calRes) {
+    res.status(calRes.status).json(calRes.data.items);
+  }
+});
 
-app.post('/', (req, res) => {
-  console.log(req)
+// @route    POST api/events
+// @desc     Add new event
+// @access   Private
+router.post('/', (req, res) => {
   readCredentials(insertEvent);
   function insertEvent(auth) {
     const calendar = google.calendar({ version: 'v3', auth });
@@ -113,24 +114,103 @@ app.post('/', (req, res) => {
     }, function (err, res) {
       if (err) {
         console.log('There was an error contacting the Calendar service: ' + err);
+        respondError(err);
         return;
       }
-      console.log('Event created: %s', res.htmlLink);
-      response();
-    })
+      respond(res);
+    });
   }
-  function response() {
-    res.status(200).send({ msg: 'Event created:' });
+  function respondError(calError) {
+    res.status(calError.code).json(calError.errors[0]);
   }
-})
-=======
-const app = express();
-app.use(express.json({ extended: false }));
+  function respond(calRes) {
+    res.status(calRes.status).json(calRes.data);
+  }
+});
 
-app.use('/api/calendars', require('./calendars'));
-app.use('/api/events', require('./events'));
->>>>>>> dev
+// @route    GET api/events/:id
+// @desc     Get event by id
+// @access   Private
+router.get('/:id', (req, res) => {
+  readCredentials(getEvent);
+  function getEvent(auth) {
+    const calendar = google.calendar({ version: 'v3', auth });
+    calendar.events.get({
+      auth: auth,
+      calendarId: 'primary',
+      eventId: req.params.id,
+    }, function (err, res) {
+      if (err) {
+        console.log('There was an error contacting the Calendar service: ' + err);
+        respondError(err);
+        return;
+      }
+      respond(res);
+    });
+  }
+  function respondError(calError) {
+    res.status(calError.code).json(calError.errors[0]);
+  }
+  function respond(calRes) {
+    res.status(calRes.status).json(calRes.data);
+  }
+});
 
-const PORT = process.env.PORT || 5000;
+// @route    DELETE api/events/:id
+// @desc     Delete event by id
+// @access   Private
+router.delete('/:id', (req, res) => {
+  readCredentials(deleteEvent);
+  function deleteEvent(auth) {
+    const calendar = google.calendar({ version: 'v3', auth });
+    calendar.events.delete({
+      auth: auth,
+      calendarId: 'primary',
+      eventId: req.params.id,
+    }, function (err, res) {
+      if (err) {
+        console.log('There was an error contacting the Calendar service: ' + err);
+        respondError(err);
+        return;
+      }
+      respond(res);
+    });
+  }
+  function respondError(calError) {
+    res.status(calError.code).json(calError.errors[0]);
+  }
+  function respond(calRes) {
+    res.status(calRes.status).send({ message: 'Event has been deleted.' });
+  }
+});
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+// @route    PUT api/events
+// @desc     Update event
+// @access   Private
+router.put('/:id', (req, res) => {
+  readCredentials(updateEvent);
+  function updateEvent(auth) {
+    const calendar = google.calendar({ version: 'v3', auth });
+    calendar.events.update({
+      auth: auth,
+      calendarId: 'primary',
+      eventId: req.params.id,
+      resource: req.body,
+    }, function (err, res) {
+      if (err) {
+        console.log('There was an error contacting the Calendar service: ' + err);
+        respondError(err);
+        return;
+      }
+      respond(res);
+    });
+  }
+  function respondError(calError) {
+    res.status(calError.code).json(calError.errors[0]);
+  }
+  function respond(calRes) {
+    res.status(calRes.status).json(calRes.data);
+  }
+});
+
+module.exports = router;
