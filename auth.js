@@ -17,7 +17,7 @@ const TOKEN_PATH = 'token.json';
 
 function readCredentials(callback) {
   // Authorize a client with credentials, then call the Google Calendar API.
-  authorize(credentials, callback);
+  authorize(callback, credentials);
   // authorize(JSON.parse(content), insertEvent);
 }
 
@@ -28,7 +28,7 @@ function readCredentials(callback) {
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(credentials, callback) {
+function authorize(callback, credentials) {
   const { client_secret, client_id, redirect_uris } = credentials.installed;
   const oAuth2Client = new google.auth.OAuth2(
     client_id, client_secret, redirect_uris[0]);
