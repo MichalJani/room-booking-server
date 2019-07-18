@@ -1,26 +1,14 @@
 const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
-const express = require('express');
-const router = express.Router();
 const credentials = require('./credentials.json'); // może jakis try/catch tutaj jakby plik nie istnial?
 
-
-
-// If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
-// The file token.json stores the user's access and refresh tokens, and is
-// created automatically when the authorization flow completes for the first
-// time.
 const TOKEN_PATH = 'token.json';
 
-
 function readCredentials(callback) {
-  // Authorize a client with credentials, then call the Google Calendar API.
   authorize(callback, credentials);
-  // authorize(JSON.parse(content), insertEvent);
 }
-
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -32,14 +20,12 @@ function authorize(callback, credentials) {
   const { client_secret, client_id, redirect_uris } = credentials.installed;
   const oAuth2Client = new google.auth.OAuth2(
     client_id, client_secret, redirect_uris[0]);
-
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
     if (err) return getAccessToken(oAuth2Client, callback);
     oAuth2Client.setCredentials(JSON.parse(token));
     callback(oAuth2Client);
   });
-
 }
 
 /**
