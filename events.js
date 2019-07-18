@@ -1,8 +1,8 @@
-const fs = require('fs');
-const readline = require('readline');
+
 const { google } = require('googleapis');
 const express = require('express');
 const router = express.Router();
+<<<<<<< HEAD
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 // The file token.json stores the user's access and refresh tokens, and is
@@ -69,6 +69,9 @@ function getAccessToken(oAuth2Client, callback) {
     });
   });
 }
+=======
+const { readCredentials } = require('./auth')
+>>>>>>> exp
 
 // @route    GET api/events
 // @desc     Get all events
@@ -212,5 +215,9 @@ router.put('/:id', (req, res) => {
     res.status(calRes.status).json(calRes.data);
   }
 });
+<<<<<<< HEAD
+=======
+
+>>>>>>> exp
 
 module.exports = router;
