@@ -16,7 +16,7 @@ function readCredentials(callback) {
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(callback, credentials) {
+function authorize(callback) {
   const { client_secret, client_id, redirect_uris } = credentials.installed;
   const oAuth2Client = new google.auth.OAuth2(
     client_id, client_secret, redirect_uris[0]);
@@ -60,4 +60,4 @@ function getAccessToken(oAuth2Client, callback) {
 }
 
 
-module.exports = { readCredentials }
+module.exports = { authorize }
