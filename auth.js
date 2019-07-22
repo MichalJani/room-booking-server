@@ -6,10 +6,6 @@ const credentials = require('./credentials.json'); // może jakis try/catch tuta
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 const TOKEN_PATH = 'token.json';
 
-function readCredentials(callback) {
-  authorize(callback, credentials);
-}
-
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
