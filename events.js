@@ -2,11 +2,7 @@
 const { google } = require('googleapis');
 const express = require('express');
 const router = express.Router();
-<<<<<<< HEAD
-const { readCredentials } = require('./auth')
-=======
 const { authorize } = require('./auth')
->>>>>>> cors
 
 // @route    GET api/events
 // @desc     Get all events
