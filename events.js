@@ -2,13 +2,17 @@
 const { google } = require('googleapis');
 const express = require('express');
 const router = express.Router();
+<<<<<<< HEAD
 const { readCredentials } = require('./auth')
+=======
+const { authorize } = require('./auth')
+>>>>>>> cors
 
 // @route    GET api/events
 // @desc     Get all events
 // @access   Private
 router.get('/', (req, res) => {
-  readCredentials(listEvents);
+  authorize(listEvents);
   function listEvents(auth) {
     const calendar = google.calendar({ version: 'v3', auth });
     calendar.events.list({
@@ -38,7 +42,7 @@ router.get('/', (req, res) => {
 // @desc     Add new event
 // @access   Private
 router.post('/', (req, res) => {
-  readCredentials(insertEvent);
+  authorize(insertEvent);
   function insertEvent(auth) {
     const calendar = google.calendar({ version: 'v3', auth });
     calendar.events.insert({
@@ -66,7 +70,7 @@ router.post('/', (req, res) => {
 // @desc     Get event by id
 // @access   Private
 router.get('/:id', (req, res) => {
-  readCredentials(getEvent);
+  authorize(getEvent);
   function getEvent(auth) {
     const calendar = google.calendar({ version: 'v3', auth });
     calendar.events.get({
@@ -94,7 +98,7 @@ router.get('/:id', (req, res) => {
 // @desc     Delete event by id
 // @access   Private
 router.delete('/:id', (req, res) => {
-  readCredentials(deleteEvent);
+  authorize(deleteEvent);
   function deleteEvent(auth) {
     const calendar = google.calendar({ version: 'v3', auth });
     calendar.events.delete({
@@ -122,7 +126,7 @@ router.delete('/:id', (req, res) => {
 // @desc     Update event
 // @access   Private
 router.put('/:id', (req, res) => {
-  readCredentials(updateEvent);
+  authorize(updateEvent);
   function updateEvent(auth) {
     const calendar = google.calendar({ version: 'v3', auth });
     calendar.events.update({
