@@ -1,7 +1,7 @@
 const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
-const credentials = require('./credentials.json'); // może jakis try/catch tutaj jakby plik nie istnial?
+const credentials = require('./credentials.json'); // add try/catch if there was no credentials
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 const TOKEN_PATH = 'token.json';
@@ -54,6 +54,5 @@ function getAccessToken(oAuth2Client, callback) {
     });
   });
 }
-
 
 module.exports = { authorize }
